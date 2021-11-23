@@ -1,0 +1,318 @@
+<div class="">
+    <div class="page-title">
+        <div class="title_left">
+            <h3></h3>
+        </div>
+
+
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Group Type:
+                        <select class="form-select" style="padding: 5px;" id="groupBy">
+                            <option selected>Chọn</option>
+                  <option value="1">Biển Báo Cấm</option>
+                  <option value="2">Biển báo nguy hiểm</option>
+                  <option value="3">Biển báo hiệu lệnh</option>
+                  <option value="4">Biển báo chỉ dẫn</option>
+                  <option value="5">Biển báo phụ</option>
+                  <option value="6">Vạch kẻ đường</option>
+                </select>
+                    </h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><button id="create" class="btn btn-primary"><i class="fa fa-plus"></i> ADD </button>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <!-- start project list -->
+                <table class="table table-striped projects" id="tb1">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">ID</th>
+                            <th style="width: 20%">Name</th>
+                            <th>Image</th>
+                            <th style="width: 20%">Content</th>
+                            <th style="width: 50%">Penalty</th>
+
+                            <th style="width: 20%">Click</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tbody">
+                        <tr id="loading">
+                            <td colspan="7">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+
+
+                <!-- load sort -->
+
+
+                <table class="table table-striped projects" id="tb2">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">ID</th>
+                            <th style="width: 20%">Name</th>
+                            <th>Image</th>
+                            <th style="width: 20%">Content</th>
+                            <th style="width: 50%">Penalty</th>
+
+                            <th style="width: 20%">Click</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="target">
+
+
+                    </tbody>
+                </table>
+                <!-- end project list -->
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">EDIT</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">ID</label>
+                        <input type="text" class="form-control" disabled='true' id="edit_id" aria-describedby="emailHelp" placeholder="ID">
+
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Name</label>
+                        <input type="text" class="form-control" id="edit_name" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Content</label>
+                        <input type="text" class="form-control" id="edit_content" placeholder="Content">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Penalty</label>
+                        <input type="text" class="form-control" id="edit_penalty" placeholder="Penalty">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="save" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(() => {
+        $('#save').click(() => {
+            data = {
+                id: $('#edit_id').val(),
+                name: $("#edit_name").val(),
+                content: $('#edit_content').val(),
+                penalty: $('#edit_penalty').val()
+            }
+            $.ajax({
+                url: '/api/editItem',
+                type: 'POST',
+                data: data,
+                success: () => {
+                    alert('Update success')
+                    window.location.reload()
+                },
+                error: () => {
+                    alert('Update error')
+                }
+            })
+        })
+
+        $("#loading").show();
+        $("#tb2").hide()
+        $.ajax({
+            url: "/api/getTrafficSingns",
+            type: "GET",
+            dataType: "JSON",
+            success: (data) => {
+                $("#loading").hide();
+
+                for (const el in data) {
+
+
+                    $("#tbody").append(`<tr>
+                      <td>${el}</td>
+                      <td>${data[el]["name"]}</td>
+                      
+                      <td> <img src="${data[el]['image']}" style="width: 50px; height: 50px" /> </td>
+                      <td> ${data[el]["content"]} </td>
+                      <td> ${data[el]['penalty']}</td>
+                    
+                            <td>
+                                <button type="button" class="btn btn-primary"  onclick="editID('${el}')" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-pencil"></i></button>
+                                <button class="btn btn-danger btn-xs" onclick="deleteID('${el}')"><i class="fa fa-trash-o"></i> </button>
+                            </td>
+                      </tr>`);
+                }
+            },
+            error: () => {
+                $(".loading").hide();
+                alert("Error loading");
+            },
+        });
+
+        $('#create').click(() => {
+            window.location.replace('/upload')
+        })
+
+
+
+    });
+
+    function deleteID(id) {
+        var txt;
+        var r = confirm("Are you sure delete ?");
+        if (r == true) {
+            $.ajax({
+                url: `/api/deleteItem/${id}`,
+                type: 'delete',
+
+
+            })
+            window.location.reload()
+        } else {
+            alert('exit')
+        }
+
+
+    }
+
+    function editID(id) {
+        $.ajax({
+            url: `/api/edit/${id}`,
+            type: 'GET',
+
+            success: (data) => {
+                if (data.message == 'success') {
+                    $('#edit_id').val(id)
+                    $('#edit_name').val(data['data']['name'])
+                    $('#edit_content').val(data['data']['content'])
+                    $('#edit_penalty').val(data['data']['penalty'])
+                } else {
+                    alert('Not found');
+                    $('.modal-dialog').hide()
+                }
+
+            },
+
+        })
+    }
+
+
+    $('#groupBy').change(
+
+
+        () => {
+            $('#tb1').hide()
+            $('#tb2').show()
+            $('tr').remove()
+            $.ajax({
+                url: '/api/sort',
+
+                dataType: 'JSON',
+                type: 'get',
+                success: (data) => {
+                    const sort = groupType($('#groupBy').val())
+
+                    for (const el in data.data) {
+                        const list = [];
+                        if (sort === data.data[el]['namegrouptype']) {
+                            list.push({
+                                id: el,
+                                data: data.data[el]
+                            })
+
+                        }
+                        list.forEach((el => {
+
+                            $("#target").append(`<tr>
+                            <td>${el.id}</td>
+                            <td>${el.data.name}</td>
+                            
+                            <td> <img src="${el.data.image}" style="width: 50px; height: 50px" /> </td>
+                            <td> ${el.data.content} </td>
+                            <td>${el.data.penalty} </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-primary"  onclick="editID('${el.id}')" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-danger btn-xs" onclick="deleteID('${el.id}')"><i class="fa fa-trash-o"></i> </button>
+                                    </td>
+                            </tr>`);
+
+                        }))
+
+
+                    }
+
+
+
+
+
+
+                }
+            })
+
+
+        }
+    )
+
+    function groupType(value) {
+        switch (value) {
+            case '1':
+                // code block
+                return 'Biển báo cấm'
+                break;
+            case '2':
+                // code block
+                return 'Biển báo nguy hiểm'
+                break;
+            case '3':
+                // code block
+                return 'Biển báo hiệu lệnh'
+                break;
+            case '4':
+                // code block
+                return 'Biển báo chỉ dẫn'
+                break;
+            case '5':
+                // code block
+                return 'Biển báo phụ'
+                break;
+            case '6':
+                // code block
+                return 'Vạch kẻ đường'
+                break;
+
+        }
+    }
+</script>

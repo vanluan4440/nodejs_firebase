@@ -1,0 +1,17 @@
+
+
+tech:
+
+nodejs
+express
+firebase
+ajax
+jquery
+boostrap
+jwt
+
+
+account login admin: 
+
+name: admin@gmail.com
+password: admin123

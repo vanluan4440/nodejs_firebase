@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,700" rel="stylesheet" />
+</head>
+
+<body>
+
+
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Create the traffic sign</h3>
+            </div>
+            <div class="title_right">
+                <div class="col-md-5 col-sm-5  form-group pull-right top_search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                  <button class="btn btn-secondary" type="button">Go!</button>
+                </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel">
+                    <div class="x_title">
+
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="col-md-3 col-sm-3  profile_left">
+                            <div class="profile_img">
+                                <div id="crop-avatar">
+                                    <!-- Current avatar -->
+                                    <div class="preview" style="width: 100px;height: 100px;"></div>
+
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3">
+
+
+                                <progress id="uploader" value="0" max="100">0%</progress> <br>
+                                <input type="file" id="fileButton" value="upload" />
+
+                            </div>
+
+                            <br />
+                        </div>
+                        <div class="col-md-9 col-sm-9 ">
+                            <!-- start of user-activity-graph -->
+                            <div class="x_content">
+                                <form class="" action="" method="post" novalidate>
+
+
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-3 col-sm-3  label-align">GroupType<span class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6">
+                                            <select class="form-control" id="group" type="GroupType" class='GroupType' name="GroupType">
+                                    
+                                    <option value="1">Biển báo cấm</option>
+                                    <option value="2">Biển báo nguy hiểm</option>
+                                    <option value="3">Biển báo hiệu lệnh</option>
+                                    <option value="4">Biển báo chỉ dẫn</option>
+                                    <option value="5">Biển báo phụ</option>
+                                    <option value="6">Vạch kẻ đường</option>
+                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-3 col-sm-3  label-align">ID<span class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6">
+                                            <input class="form-control" class='ID' id="id" name="id" data-validate-length-range="5,15" type="text" required='true' /></div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-3 col-sm-3  label-align">Name<span class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6">
+                                            <input class="form-control" id="name" data-validate-length-range="6" data-validate-words="2" name="Name" required="required" /></div>
+                                    </div>
+
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-3 col-sm-3  label-align">Content <span class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6">
+                                            <input class="form-control" id="content" type="text" class='Content' name="Content" required='required'></div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-3 col-sm-3  label-align">Penalty<span class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6">
+                                            <input class="form-control" id="penalty" type='text' class="Penalty" name="Penalty" required></div>
+                                    </div>
+                                    <div class="ln_solid">
+                                        <div class="form-group">
+                                            <div class="col-md-6 offset-md-3">
+                                                <li><button type='button' id="create" class="btn btn-primary"> Create </button>
+                                                    <button type='reset' class="btn btn-success">Reset</button>
+                                                </li>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDoRVQQdIbCdeSF1qVzOWShjGBR9Vu34Is",
+            authDomain: "webservice-tsr.firebaseapp.com",
+            databaseURL: "https://webservice-tsr-default-rtdb.firebaseio.com",
+            projectId: "webservice-tsr",
+            storageBucket: "webservice-tsr.appspot.com",
+            messagingSenderId: "736345745246",
+            appId: "1:736345745246:web:6ff42ab568afb0174491cf",
+            measurementId: "G-GQVWNNBH70",
+        };
+        firebase.initializeApp(config);
+        //-------------------------------------
+
+        var uploader = document.getElementById("uploader");
+        var fileButton = document.getElementById("fileButton");
+        fileButton.addEventListener("change", function(e) {
+            var file = e.target.files[0];
+            var storageRef = firebase.storage().ref(file.name);
+            var task = storageRef.put(file);
+            task.on(
+                "state_changed",
+                function progress(snapshot) {
+                    var percentage =
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    uploader.value = percentage;
+                },
+                function error(err) {
+                    console.log(err);
+                },
+                function complete() {
+                    var file = e.target.files[0];
+                    var storage = firebase.storage();
+                    var gsReference = storage
+                        .ref(file.name)
+                        .getDownloadURL()
+                        .then((url) => {
+                            window.localStorage.setItem('img', JSON.stringify(url))
+                        });
+                }
+            );
+
+        });
+
+
+        $('#create').click((e) => {
+            var id = $('#id').val()
+            var group = groupType($('#group').val());
+            var name = $('#name').val()
+            var content = $('#content').val()
+            var penalty = $('#penalty').val()
+
+            data = {
+                id,
+                group,
+                name,
+                content,
+                penalty,
+                url: JSON.parse(window.localStorage.getItem('img'))
+            }
+
+            $.ajax({
+                url: '/api/create/trafficSign', // 
+                data: data,
+                dataType: "JSON",
+                type: 'post',
+
+                success: function(res) {
+                    alert('Success')
+                    window.localStorage.clear()
+                    window.location.href = '/list'
+                }
+            });
+
+
+        })
+
+        function groupType(value) {
+            switch (value) {
+                case '1':
+                    // code block
+                    return 'Biển báo cấm'
+                    break;
+                case '2':
+                    // code block
+                    return 'Biển báo nguy hiểm'
+                    break;
+                case '3':
+                    // code block
+                    return 'Biển báo hiệu lệnh'
+                    break;
+                case '4':
+                    // code block
+                    return 'Biển báo chỉ dẫn'
+                    break;
+                case '5':
+                    // code block
+                    return 'Biển báo phụ'
+                    break;
+                case '6':
+                    // code block
+                    return 'Vạch kẻ đường'
+                    break;
+
+            }
+        }
+    </script>
+</body>
+
+</html>

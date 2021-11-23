@@ -1,0 +1,91 @@
+<div class="">
+    <div class="page-title">
+        <div class="title_left">
+        </div>
+
+
+
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <!-- start project list -->
+                        <table class="table table-striped projects">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%">ID_Account</th>
+                                    <th style="width: 20%">Email</th>
+                                    <th style="width: 20%">Password</th>
+                                    <th style="width: 20%">Name</th>
+                                    <th style="width: 20%">Phone</th>
+                                    <th style="width: 20%">Click</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+                                <tr id="loading">
+                                    <td colspan="6">
+                                        <div class="d-flex justify-content-center">
+                                            <div class="spinner-border" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- end project list -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    $(document).ready(() => {
+        $("#loading").show();
+        $.ajax({
+            url: "/api/Users",
+            type: "GET",
+            dataType: "JSON",
+            success: (data) => {
+                $("#loading").hide();
+
+                for (const el in data) {
+                    console.log(data[el]);
+                    $("#tbody").append(`<tr>
+                      <td>${el}</td>
+                      <td>${data[el]["email"]}</td>
+                      <td> ${data[el]["password"]}</td>
+                      <td> ${data[el]["name"]} </td>
+                      <td>${data[el]['phone']}</td>
+                      <td> <button class="btn btn-danger" onclick="deleteUser('${el}') ">Delete</button></td>
+                      </tr>`);
+                }
+            },
+            error: () => {
+                $(".loading").hide();
+                alert("Error loading");
+            },
+        });
+    });
+
+    function deleteUser(id) {
+
+        var txt;
+        var r = confirm("Are you sure delete?");
+        if (r == true) {
+            $.ajax({
+                url: `/api/deleteUser/${id}`,
+                type: 'DELETE',
+
+            })
+            window.location.reload()
+        } else {
+            alert('exit')
+        }
+    }
+</script>
